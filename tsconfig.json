@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "useUnknownInCatchVariables": false,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noEmit": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "node_modules/@apple/symbols/types.d.ts",
+    "src/AuthContext.js"
+  ],
+  "exclude": [
+    "*/build/**/*",
+    "atomic/**/*",
+    "edm-http-graphql-api/**/*",
+    "graphql-smoketest/**/*"
+  ]
+}
