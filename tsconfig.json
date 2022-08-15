@@ -11,7 +11,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "noEmit": true
@@ -19,13 +19,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "node_modules/@apple/symbols/types.d.ts",
-    "src/AuthContext.js"
-  ],
-  "exclude": [
-    "*/build/**/*",
-    "atomic/**/*",
-    "edm-http-graphql-api/**/*",
-    "graphql-smoketest/**/*"
+    "src/AuthContext.js",
+    "src/Components/SidePanel.jsx"
   ]
 }

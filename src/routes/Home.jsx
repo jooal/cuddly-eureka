@@ -10,9 +10,6 @@ export const Home = () => {
   return (
     <React.Fragment>
       <Header />
-      {/* <Stack justifyContent="center" alignItems="center">
-        <Pagination count={10} color="primary" />
-      </Stack> */}
       <Grid
         container
         direction="row"
@@ -22,7 +19,7 @@ export const Home = () => {
         <Grid container item xs={12} md={8} direction="column">
           <Discussion filter={filter} setFilter={setFilter} />
         </Grid>
-        <Grid container item xs={12} md={4} direction="column">
+        <Grid container item xs={12} md={3} direction="column">
           <SidePanel filter={filter} setFilter={setFilter} />
         </Grid>
       </Grid>

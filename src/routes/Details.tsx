@@ -10,9 +10,6 @@ export const Details = () => {
   return (
     <React.Fragment>
       <Header />
-      {/* <Stack justifyContent="center" alignItems="center">
-        <Pagination count={10} color="primary" />
-      </Stack> */}
       <Grid
         container
         direction="row"
