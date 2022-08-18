@@ -6,6 +6,8 @@ import {
   Grid,
   Typography,
   Avatar,
+  Box,
+  Button,
   Divider,
 } from "@mui/material";
 import * as React from "react";
@@ -17,7 +19,7 @@ import {
   onSnapshot,
   where,
 } from "firebase/firestore";
-import { Box } from "@mui/system";
+import { useNavigate } from "react-router-dom";
 
 interface DiscussionProps {
   filter: string;
@@ -39,24 +41,44 @@ const leftColumn = (
   </Grid>
 );
 
-const rightColumn = p => (
-  <Grid
-    container
-    item
-    direction="column"
-    gap={2}
-    xs={2}
-    justifyContent="center"
-  >
-    <Typography variant="body2" color="text.secondary" sx={{ display: "flex" }}>
-      {/* {p.data.createdAt} */}2 hours ago
-    </Typography>
-    <Divider />
-    <Typography sx={{ display: "flex" }} variant="body2" color="text.secondary">
-      {p.data.commentCount} comments
-    </Typography>
-  </Grid>
-);
+const RightColumn = p => {
+  const navigate = useNavigate();
+  const postId = p.p.id;
+  return (
+    <Grid
+      container
+      item
+      direction="column"
+      gap={2}
+      xs={2}
+      justifyContent="center"
+    >
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{ display: "flex" }}
+      >
+        {/* {p.data.createdAt} */}2 hours ago
+      </Typography>
+      <Divider />
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => {
+          navigate(`/${123}`);
+        }}
+      >
+        <Typography
+          sx={{ display: "flex" }}
+          variant="body2"
+          color="text.secondary"
+        >
+          {p.p.data.commentCount} comments
+        </Typography>
+      </Button>
+    </Grid>
+  );
+};
 
 /** Threads are sorted by newest post by default. */
 
@@ -134,7 +156,7 @@ export const Discussion = ({ filter, setFilter }: DiscussionProps) => {
                     </Typography>
                   </Stack>
                 </Grid>
-                {rightColumn(p)}
+                <RightColumn p={p} />
               </Grid>
             </CardContent>
           )}
