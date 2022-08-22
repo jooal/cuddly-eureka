@@ -4,7 +4,7 @@ import App from "../App";
 
 type AppContextValue = {
   userIsLoggedIn: boolean;
-  settUserIsLoggedIn: (userIsLoggedIn: boolean) => void;
+  setUserIsLoggedIn: (userIsLoggedIn: boolean) => void;
   userName: string;
   setUserName: (userName: string) => void;
   avatar: string;
@@ -13,18 +13,21 @@ type AppContextValue = {
   setUserEmail: (userEmail: string) => void;
   userId: string;
   setUserId: (userId: string) => void;
+  postId: string;
+  setPostId: (postId: string) => void;
 };
 
 export const AppContext = createContext<AppContextValue>({} as any);
 
 export const useAppContext = () => useContext(AppContext);
 
-export const Apps = () => {
-  const [userIsLoggedIn, settUserIsLoggedIn] = useState(false);
+export const AppProvider = props => {
+  const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState(null);
   const [avatar, setAvatar] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [postId, setPostId] = useState("");
 
   const auth = getAuth();
 
@@ -36,15 +39,16 @@ export const Apps = () => {
           // https://firebase.google.com/docs/reference/js/firebase.User
           const uid = user.uid;
           setUserId(uid);
-          settUserIsLoggedIn(true);
+          setUserIsLoggedIn(true);
           setUserEmail(user.email);
           setUserName(user.displayName);
           setAvatar(user.photoURL);
+
           // ...
         } else {
           // User is signed out
           // ...
-          settUserIsLoggedIn(false);
+          setUserIsLoggedIn(false);
           setUserId(undefined);
           setUserEmail(undefined);
           setUserName(undefined);
@@ -57,7 +61,7 @@ export const Apps = () => {
   const contextValue = useMemo(
     () => ({
       userIsLoggedIn,
-      settUserIsLoggedIn,
+      setUserIsLoggedIn,
       userName,
       setUserName,
       userEmail,
@@ -66,10 +70,12 @@ export const Apps = () => {
       setAvatar,
       userId,
       setUserId,
+      postId,
+      setPostId,
     }),
     [
       userIsLoggedIn,
-      settUserIsLoggedIn,
+      setUserIsLoggedIn,
       userName,
       setUserName,
       userEmail,
@@ -78,11 +84,13 @@ export const Apps = () => {
       setAvatar,
       userId,
       setUserId,
+      postId,
+      setPostId,
     ]
   );
   return (
     <AppContext.Provider value={contextValue}>
-      <App />
+      {props.children}
     </AppContext.Provider>
   );
 };

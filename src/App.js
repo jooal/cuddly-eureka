@@ -1,17 +1,17 @@
 import "./App.css";
 import * as React from "react";
-import { Home } from "./routes/Home";
-import { AuthProvider } from "./AuthProvider";
+import { Home } from "./pages/Home";
+import { AppContext, AppProvider } from "./Components/AppContext";
 
 function App() {
   return (
-    <AuthProvider>
+    <AppProvider>
       <div className="App">
         <header className="App-header">
           <Home />
         </header>
       </div>
-    </AuthProvider>
+    </AppProvider>
   );
 }
 

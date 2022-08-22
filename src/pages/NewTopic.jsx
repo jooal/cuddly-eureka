@@ -13,7 +13,7 @@ import { Header } from "../Components/Header";
 import { db } from "../../src/firebase/firebaseConfig";
 import { collection, addDoc, Timestamp, documentId } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { useAppContext } from "../Components/AppContext";
+import { AppProvider, useAppContext } from "../Components/AppContext";
 // import { randomUUID } from "crypto";
 
 const categories = [
@@ -66,7 +66,8 @@ export const NewTopic = () => {
   const [formError, setFormError] = React.useState("");
   const navigate = useNavigate();
 
-  // const { userId } = useAppContext();
+  const { userId } = useAppContext();
+  console.log(userId, "userid");
 
   const submitDisabled = title === "" || description === "" || tag === "";
 
@@ -87,11 +88,10 @@ export const NewTopic = () => {
       await addDoc(collection(db, "posts"), {
         title: title,
         description: description,
-        // createdBy: userId,
+        createdBy: userId,
         createdAt: Timestamp.now(),
         tag: tag,
         commentCount: 0,
-        // id: db.id,
       }).then(() => {
         navigate("/");
       });

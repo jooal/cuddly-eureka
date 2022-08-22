@@ -37,6 +37,7 @@ import {
   Expand,
   ThumbUpAltOutlined,
 } from "@mui/icons-material";
+import { useAppContext } from "../Components/AppContext";
 
 const leftColumn = (
   <Grid
@@ -88,6 +89,7 @@ export const Details = () => {
   const [postLike, setPostLike] = React.useState(false);
   const [showWidget, setShowWidget] = React.useState(false);
   const [comment, setComment] = React.useState("");
+  const { userId, userName } = useAppContext();
 
   React.useEffect(() => {
     const filterQuery = query(
@@ -110,7 +112,12 @@ export const Details = () => {
     const docRef = doc(db, "posts", postDetail[0].id);
     try {
       await updateDoc(docRef, {
-        comments: arrayUnion({ comment: comment, createdAt: Timestamp.now() }),
+        comments: arrayUnion({
+          comment: comment,
+          createdAt: Timestamp.now(),
+          createdByUser: userName,
+          createdByUserId: userId,
+        }),
       }).then(() => {
         setShowWidget(false);
       });
@@ -264,7 +271,7 @@ export const Details = () => {
                             color="text.secondary"
                             gutterBottom
                           >
-                            {p.user}
+                            {p.createdByUser}
                           </Typography>
                         </Grid>
                         <Grid item xs={8}>

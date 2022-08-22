@@ -11,7 +11,7 @@ import {
   Divider,
 } from "@mui/material";
 import * as React from "react";
-import { db } from "../firebase/firebaseConfig";
+import { db, signInWithGoogle } from "../firebase/firebaseConfig";
 import {
   collection,
   query,
@@ -19,11 +19,14 @@ import {
   onSnapshot,
   where,
 } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAppContext } from "./AppContext";
+import timeAgo from "./timeago";
 
 interface DiscussionProps {
   filter: string;
   setFilter: (filter: string) => void;
+  userId: string;
 }
 
 const leftColumn = (
@@ -43,7 +46,13 @@ const leftColumn = (
 
 const RightColumn = p => {
   const navigate = useNavigate();
-  const postId = p.p.id;
+  // const { setPostId, postId } = useAppContext();
+  const { selectedPostId } = useParams();
+  const { userIsLoggedIn } = useAppContext();
+  // const time = new Date(p.data.createdAt).getHour();
+
+  const detailId = p.p.id;
+
   return (
     <Grid
       container
@@ -58,14 +67,22 @@ const RightColumn = p => {
         color="text.secondary"
         sx={{ display: "flex" }}
       >
-        {/* {p.data.createdAt} */}2 hours ago
+        {/* {p.p.data.createdAt} */}
+        {/* {timeAgo(new Date(p?.p?.data?.createdAt))} ago{" "} */}
+        {/* {time} */}
+        2 hours ago
       </Typography>
       <Divider />
       <Button
         variant="outlined"
         size="small"
         onClick={() => {
-          navigate(`/${123}`);
+          // setPostId(detailId);
+          if (userIsLoggedIn) {
+            navigate(`/${detailId}`);
+          } else {
+            signInWithGoogle();
+          }
         }}
       >
         <Typography
@@ -82,9 +99,8 @@ const RightColumn = p => {
 
 /** Threads are sorted by newest post by default. */
 
-export const Discussion = ({ filter, setFilter }: DiscussionProps) => {
+export const Discussion = ({ filter, setFilter, userId }: DiscussionProps) => {
   const [posts, setPosts] = React.useState([]);
-
   React.useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
     const filterQuery = query(

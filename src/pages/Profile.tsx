@@ -1,4 +1,5 @@
 import * as React from "react";
+import {useState} from "react";
 import {
   Grid,
   Stack,
@@ -12,6 +13,23 @@ import {
   CardContent,
 } from "@mui/material";
 import { Header } from "../Components/Header";
+import { useAppContext } from "../Components/AppContext";
+import {
+  collection,
+  query,
+  doc,
+  orderBy,
+  onSnapshot,
+  documentId,
+  updateDoc,
+  Timestamp,
+  where,
+  arrayUnion,
+  FieldPath,
+  Firestore,
+} from "firebase/firestore";
+import { db } from "../firebase/firebaseConfig";
+
 
 const data = [
   {
@@ -23,7 +41,7 @@ const data = [
   },
 ];
 
-const leftColumn = (
+const leftColumn = avatarSrc => (
   <Grid
     container
     item
@@ -33,7 +51,7 @@ const leftColumn = (
     justifyContent="center"
     alignItems="center"
   >
-    <Avatar />
+    <Avatar src={avatarSrc} />
     <Divider />
   </Grid>
 );
@@ -52,12 +70,36 @@ const rightColumn = p => (
     </Typography>
     <Divider />
     <Typography sx={{ display: "flex" }} variant="body2" color="text.secondary">
-      {p.commentCount} comments
+      {p.data.commentCount} comments
     </Typography>
   </Grid>
 );
 
 export const Profile = () => {
+  const { userEmail, setUserEmail, userName, avatar, userId } = useAppContext();
+  const [userPosts, setUserPosts] = useState([]);
+
+  React.useEffect(() => {
+    const email = localStorage.getItem("email");
+    setUserEmail(email);
+
+    const filterQuery = query(
+      collection(db, "posts"),
+      orderBy("createdAt", "desc"),
+      where("createdBy", "==", userId)
+    );
+
+    onSnapshot(filterQuery, querySnapshot => {
+      setUserPosts(
+        querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      );
+    });
+  }, [setUserEmail]);
+
+
   return (
     <React.Fragment>
       <Header />
@@ -77,7 +119,7 @@ export const Profile = () => {
       >
         <Grid container item xs={12} md={8} direction="column">
           <Stack direction="column" spacing={2}>
-            {data.map(p => (
+            {userPosts.map(p => (
               <Card variant="outlined" sx={{ borderRadius: "8px" }}>
                 {data.length === 0 ? (
                   <Box>
@@ -86,14 +128,14 @@ export const Profile = () => {
                     </Typography>
                   </Box>
                 ) : (
-                  <CardContent key={p.id}>
+                  <CardContent key={p.data.id}>
                     <Grid
                       container
                       direction="row"
                       gap={4}
                       sx={{ padding: "12px", display: "inline-flex" }}
                     >
-                      {leftColumn}
+                      {leftColumn(avatar)}
                       <Grid
                         container
                         item
@@ -106,14 +148,14 @@ export const Profile = () => {
                           gutterBottom
                           variant="h6"
                         >
-                          {p.topic}
+                          {p.data.topic}
                         </Typography>
                         <Typography
                           sx={{ fontSize: 14 }}
                           color="text.secondary"
                           gutterBottom
                         >
-                          {p.description}
+                          {p.data.description}
                         </Typography>
                         <Stack direction="row">
                           <Typography className="item" sx={{ fontSize: 14 }}>
@@ -134,10 +176,10 @@ export const Profile = () => {
             <Card variant="outlined" sx={{ borderRadius: "8px" }}>
               <CardContent>
                 <Typography color="text.secondary" gutterBottom variant="body2">
-                  Sadie Beans
+                  {userName}
                 </Typography>
                 <Typography color="text.secondary" gutterBottom variant="body2">
-                  useremail@email.com
+                  {userEmail}
                 </Typography>
               </CardContent>
             </Card>

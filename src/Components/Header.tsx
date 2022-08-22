@@ -5,18 +5,18 @@ import {
   Toolbar,
   Typography,
   Link,
+  Grid,
   Button,
   Avatar,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { signInWithGoogle, userSignOut } from "../firebase/firebaseConfig";
-import { AppContext, useAppContext } from "./AppContext";
+import { useAppContext } from "./AppContext";
 import { Login } from "../Components/Login";
 
 export const Header = () => {
   const navigate = useNavigate();
-  const { userIsLoggedIn, settUserIsLoggedIn } = useAppContext();
-  console.log(userIsLoggedIn);
+  const { userIsLoggedIn, setUserIsLoggedIn, avatar } = useAppContext();
 
   return (
     <Box sx={{ flexGrow: 1, paddingBottom: "36px" }}>
@@ -43,38 +43,45 @@ export const Header = () => {
               GroundWork
             </Link>
           </Typography>
-          <Button
-            sx={{ ml: "24px" }}
-            variant="contained"
-            onClick={() => {
-              navigate("/new");
-            }}
-          >
-            Start New Topic
-          </Button>
-          {userIsLoggedIn ? (
-            <Login />
-          ) : (
+          <Grid container sx={{ display: "flex" }} justifyContent="flex-end">
+            <Button
+              sx={{ ml: "24px" }}
+              variant="contained"
+              onClick={() => {
+                if (userIsLoggedIn) {
+                  navigate("/new");
+                } else {
+                  signInWithGoogle();
+                }
+              }}
+            >
+              Start New Topic
+            </Button>
+            {!userIsLoggedIn ? (
+              <Login />
+            ) : (
+              <Button
+                variant="text"
+                onClick={() => {
+                  userSignOut();
+                  navigate("/");
+                  setUserIsLoggedIn(false);
+                }}
+              >
+                Sign Out
+              </Button>
+            )}
+          </Grid>
+          {userIsLoggedIn && (
             <Button
               variant="text"
               onClick={() => {
-                userSignOut();
-                //only navigate if sign out is successful
-                navigate("/");
-                settUserIsLoggedIn(false);
+                navigate("/profile");
               }}
             >
-              Sign Out
+              <Avatar src={avatar} />
             </Button>
           )}
-          <Button
-            variant="text"
-            onClick={() => {
-              navigate("/profile");
-            }}
-          >
-            <Avatar />
-          </Button>
         </Toolbar>
       </AppBar>
     </Box>

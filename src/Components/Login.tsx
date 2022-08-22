@@ -1,14 +1,20 @@
+import { Box, Button } from "@mui/material";
+import { useEffect } from "react";
 import { signInWithGoogle } from "../firebase/firebaseConfig";
+import { useAppContext } from "./AppContext";
 
 export const Login = () => {
   return (
-    <div className="App">
-      <button className="login-with-google-btn" onClick={signInWithGoogle}>
+    <Box className="App" sx={{ display: "flex" }}>
+      <Button
+        variant="text"
+        className="login-with-google-btn"
+        onClick={() => {
+          signInWithGoogle();
+        }}
+      >
         Sign in with Google
-      </button>
-      <h1>{localStorage.getItem("name")}</h1>
-      <h1>{localStorage.getItem("email")}</h1>
-      <img alt="" src={localStorage.getItem("profilePic") ?? ""} />
-    </div>
+      </Button>
+    </Box>
   );
 };
