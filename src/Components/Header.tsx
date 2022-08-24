@@ -45,7 +45,7 @@ export const Header = () => {
           </Typography>
           <Grid container sx={{ display: "flex" }} justifyContent="flex-end">
             <Button
-              sx={{ ml: "24px" }}
+              sx={{ ml: "24px", backgroundColor: "#282828" }}
               variant="contained"
               onClick={() => {
                 if (userIsLoggedIn) {
@@ -62,6 +62,7 @@ export const Header = () => {
             ) : (
               <Button
                 variant="text"
+                sx={{ color: "#282828" }}
                 onClick={() => {
                   userSignOut();
                   navigate("/");

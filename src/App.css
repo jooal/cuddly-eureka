@@ -1,8 +1,4 @@
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-.item + .item::before {
+/* .item + .item::before {
   display: inline-block;
   white-space: pre;
   content: ", ";
@@ -21,4 +17,33 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+.nav {
+  position: relative;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 900;
+}
+.nav-list {
+}
+.nav-item {
+  float: left;
+  *display: inline;
+  zoom: 1;
+}
+.nav-item a {
+  display: block;
+  padding: 15px 20px;
+  color: #fff;
+  background: #34495e;
+}
+.nav-item:first-child a {
+  border-radius: 5px 0 0 5px;
+}
+.nav-item:last-child a {
+  border-radius: 0 5px 5px 0;
+}
+.nav-item a:hover {
+  background: #2c3e50;
 }

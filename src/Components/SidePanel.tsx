@@ -1,14 +1,26 @@
 import * as React from "react";
-import { Card, Stack, CardContent, Typography, Button } from "@mui/material";
+import {
+  Card,
+  Stack,
+  CardContent,
+  Typography,
+  Button,
+  Drawer,
+} from "@mui/material";
 import { db } from "../firebase/firebaseConfig";
 import { collection, query, onSnapshot } from "firebase/firestore";
 
 interface SidePanelProps {
   filter: string;
   setFilter: (filter: string) => void;
+  setOpenDrawer: (val: boolean) => void;
 }
 
-export const SidePanel = ({ filter, setFilter }: SidePanelProps) => {
+export const SidePanel = ({
+  filter,
+  setFilter,
+  setOpenDrawer,
+}: SidePanelProps) => {
   const [tagList, setTagList] = React.useState([]);
 
   React.useEffect(() => {
@@ -27,27 +39,26 @@ export const SidePanel = ({ filter, setFilter }: SidePanelProps) => {
 
   return (
     <Stack direction="column">
-      <Card variant="outlined" sx={{ borderRadius: "8px" }}>
-        <CardContent>
-          <Typography color="text.secondary" gutterBottom variant="h6">
-            Tags
-          </Typography>
-          <Stack direction="column" alignItems="flex-start">
-            {listData.map(c => (
-              <Button
-                variant="text"
-                key={c.id}
-                sx={{ padding: "none", justifyContent: "flex-start" }}
-                onClick={() => {
-                  setFilter(c);
-                }}
-              >
-                {c}
-              </Button>
-            ))}
-          </Stack>
-        </CardContent>
-      </Card>
+      <CardContent>
+        <Typography color="text.secondary" gutterBottom variant="h6">
+          Tags
+        </Typography>
+        <Stack direction="column" alignItems="flex-start">
+          {listData.map(c => (
+            <Button
+              variant="text"
+              key={c.id}
+              sx={{ padding: "none", justifyContent: "flex-start" }}
+              onClick={() => {
+                setFilter(c);
+                setOpenDrawer(false);
+              }}
+            >
+              {c}
+            </Button>
+          ))}
+        </Stack>
+      </CardContent>
     </Stack>
   );
 };

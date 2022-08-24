@@ -29,20 +29,20 @@ interface DiscussionProps {
   userId: string;
 }
 
-const leftColumn = (
-  <Grid
-    container
-    item
-    xs={2}
-    direction="column"
-    gap={2}
-    justifyContent="center"
-    alignItems="center"
-  >
-    <Avatar />
-    <Divider />
-  </Grid>
-);
+// const leftColumn = (
+//   <Grid
+//     container
+//     item
+//     xs={2}
+//     direction="column"
+//     gap={2}
+//     justifyContent="center"
+//     alignItems="center"
+//   >
+//     <Avatar />
+//     <Divider />
+//   </Grid>
+// );
 
 const RightColumn = p => {
   const navigate = useNavigate();
@@ -58,21 +58,11 @@ const RightColumn = p => {
       container
       item
       direction="column"
-      gap={2}
-      xs={2}
+      xs={12}
+      md={2}
       justifyContent="center"
+      sx={{ paddingTop: "12px" }}
     >
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ display: "flex" }}
-      >
-        {/* {p.p.data.createdAt} */}
-        {/* {timeAgo(new Date(p?.p?.data?.createdAt))} ago{" "} */}
-        {/* {time} */}
-        2 hours ago
-      </Typography>
-      <Divider />
       <Button
         variant="outlined"
         size="small"
@@ -131,7 +121,7 @@ export const Discussion = ({ filter, setFilter, userId }: DiscussionProps) => {
   }, [filter]);
 
   return (
-    <Stack direction="column" spacing={2}>
+    <Stack direction="column" spacing={2} sx={{ width: "inherit" }}>
       {posts.map(p => (
         <Card variant="outlined" sx={{ borderRadius: "8px" }}>
           {posts.length === 0 ? (
@@ -145,16 +135,18 @@ export const Discussion = ({ filter, setFilter, userId }: DiscussionProps) => {
               <Grid
                 container
                 direction="row"
-                gap={4}
-                sx={{ padding: "12px", display: "inline-flex" }}
+                xs={12}
+                sx={{ padding: "12px", display: "flex" }}
+                justifyContent="space-between"
               >
-                {leftColumn}
                 <Grid
                   container
                   item
                   direction="column"
-                  xs={6}
+                  xs={10}
+                  md={10}
                   justifyContent="center"
+                  sx={{ overflow: "hidden" }}
                 >
                   <Typography color="text.secondary" gutterBottom variant="h6">
                     {p.data.title}
@@ -167,8 +159,18 @@ export const Discussion = ({ filter, setFilter, userId }: DiscussionProps) => {
                     {p.data.description}
                   </Typography>
                   <Stack direction="row">
-                    <Typography className="item" sx={{ fontSize: 14 }}>
-                      <Link variant="inherit">{p.data.tag}</Link>
+                    <Typography
+                      className="item"
+                      sx={{ fontSize: 14, color: "grey", paddingRight: "12px" }}
+                    >
+                      {p.data.tag}
+                    </Typography>
+                    <Typography
+                      className="item"
+                      color="text.secondary"
+                      sx={{ fontSize: 14 }}
+                    >
+                      {p.data.createdByUser} 2 hours ago
                     </Typography>
                   </Stack>
                 </Grid>

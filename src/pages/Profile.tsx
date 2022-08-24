@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useState} from "react";
+import { useState } from "react";
 import {
   Grid,
   Stack,
@@ -17,19 +17,12 @@ import { useAppContext } from "../Components/AppContext";
 import {
   collection,
   query,
-  doc,
   orderBy,
   onSnapshot,
-  documentId,
-  updateDoc,
-  Timestamp,
   where,
-  arrayUnion,
-  FieldPath,
-  Firestore,
 } from "firebase/firestore";
-import { db } from "../firebase/firebaseConfig";
-
+import { db, signInWithGoogle } from "../firebase/firebaseConfig";
+import { useNavigate } from "react-router-dom";
 
 const data = [
   {
@@ -56,60 +49,123 @@ const leftColumn = avatarSrc => (
   </Grid>
 );
 
-const rightColumn = p => (
-  <Grid
-    container
-    item
-    direction="column"
-    gap={2}
-    xs={2}
-    justifyContent="center"
-  >
-    <Typography variant="body2" color="text.secondary" sx={{ display: "flex" }}>
-      {/* {p.data.createdAt} */}2 hours ago
-    </Typography>
-    <Divider />
-    <Typography sx={{ display: "flex" }} variant="body2" color="text.secondary">
-      {p.data.commentCount} comments
-    </Typography>
-  </Grid>
-);
+const RightColumn = p => {
+  const { userIsLoggedIn } = useAppContext();
+  const detailId = p?.p.id;
+  const navigate = useNavigate();
+
+  return (
+    <Grid
+      container
+      item
+      direction="column"
+      gap={2}
+      xs={2}
+      justifyContent="center"
+    >
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{ display: "flex" }}
+      >
+        {/* {p.data.createdAt} */}2 hours ago
+      </Typography>
+      <Divider />
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => {
+          if (userIsLoggedIn) {
+            navigate(`/${detailId}`);
+          } else {
+            signInWithGoogle();
+          }
+        }}
+      >
+        <Typography
+          sx={{ display: "flex" }}
+          variant="body2"
+          color="text.secondary"
+        >
+          {p.p.data.commentCount} comments
+        </Typography>
+      </Button>
+    </Grid>
+  );
+};
 
 export const Profile = () => {
   const { userEmail, setUserEmail, userName, avatar, userId } = useAppContext();
   const [userPosts, setUserPosts] = useState([]);
+  const [tab, setTab] = useState("myposts");
+  console.log(userPosts);
 
   React.useEffect(() => {
-    const email = localStorage.getItem("email");
-    setUserEmail(email);
-
-    const filterQuery = query(
+    const postQuery = query(
       collection(db, "posts"),
       orderBy("createdAt", "desc"),
-      where("createdBy", "==", userId)
+      where("createdByUserId", "==", userId)
     );
 
-    onSnapshot(filterQuery, querySnapshot => {
-      setUserPosts(
-        querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      );
-    });
-  }, [setUserEmail]);
+    const commentQuery = query(
+      collection(db, "posts"),
+      orderBy("createdAt", "desc"),
+      where("comments.createdByUserId", "array-contains", {
+        createdByUserId: userId,
+      })
+    );
 
+    if (tab === "myposts") {
+      onSnapshot(postQuery, querySnapshot => {
+        setUserPosts(
+          querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        );
+      });
+    } else {
+      onSnapshot(commentQuery, querySnapshot => {
+        setUserPosts(
+          querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        );
+      });
+    }
+  }, [setUserEmail, userId, tab]);
 
   return (
     <React.Fragment>
       <Header />
       <Grid
+        container
+        item
+        xs={10}
+        md={8}
+        direction="column"
         justifyContent="center"
-        alignItems="center"
         sx={{ display: "flex" }}
       >
-        <Button variant="text">My Threads</Button>
-        <Button variant="text">My Comments</Button>
+        <Button
+          variant="text"
+          onClick={() => {
+            setTab("myposts");
+          }}
+          sx={{ textDecoration: tab === "myposts" ? "underline" : "none" }}
+        >
+          My Posts
+        </Button>
+        <Button
+          variant="text"
+          onClick={() => {
+            setTab("commments");
+          }}
+          sx={{ textDecoration: tab === "comments" ? "underline" : "none" }}
+        >
+          Posts I've Commented On
+        </Button>
       </Grid>
       <Grid
         container
@@ -163,7 +219,7 @@ export const Profile = () => {
                           </Typography>
                         </Stack>
                       </Grid>
-                      {rightColumn(p)}
+                      <RightColumn p={p} />
                     </Grid>
                   </CardContent>
                 )}

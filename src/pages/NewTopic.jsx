@@ -81,7 +81,6 @@ export const NewTopic = () => {
     }
   };
 
-  /* function to add new task to firestore */
   const handleSubmit = async e => {
     e.preventDefault();
     try {
@@ -105,14 +104,17 @@ export const NewTopic = () => {
       <Header />
       <Grid
         container
-        sx={{ margin: "0 auto", paddingBottom: "36px" }}
+        item
+        xs={10}
+        md={8}
+        direction="column"
         justifyContent="center"
-        xs={8}
+        sx={{ margin: "0 auto", marginBlockEnd: "36px" }}
       >
         <Stack direction="row" spacing={4}>
           <FormControl
             sx={{
-              padding: "48px",
+              padding: "36px",
               backgroundColor: "AppWorkspace",
             }}
           >

@@ -30,29 +30,8 @@ import {
   Firestore,
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
-import {
-  AddComment,
-  ThumbUp,
-  ExpandMore,
-  Expand,
-  ThumbUpAltOutlined,
-} from "@mui/icons-material";
+import { ThumbUp, ThumbUpAltOutlined } from "@mui/icons-material";
 import { useAppContext } from "../Components/AppContext";
-
-const leftColumn = (
-  <Grid
-    container
-    item
-    xs={2}
-    direction="column"
-    gap={2}
-    justifyContent="center"
-    alignItems="center"
-  >
-    <Avatar />
-    <Divider />
-  </Grid>
-);
 
 const rightColumn = p => {
   return (
@@ -60,18 +39,11 @@ const rightColumn = p => {
       container
       item
       direction="column"
-      gap={2}
-      xs={2}
+      xs={12}
+      md={2}
       justifyContent="center"
+      sx={{ paddingTop: "12px" }}
     >
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ display: "flex" }}
-      >
-        {/* {p.data.createdAt} */}2 hours ago
-      </Typography>
-      <Divider />
       <Typography
         sx={{ display: "flex" }}
         variant="body2"
@@ -135,181 +107,198 @@ export const Details = () => {
       <Header />
       <Grid
         container
-        direction="row"
-        sx={{ paddingY: "36px", paddingX: "48px", display: "flex" }}
-        gap="24px"
+        item
+        xs={10}
+        md={8}
+        direction="column"
+        justifyContent="center"
+        alignContent="center"
+        sx={{ margin: "0 auto" }}
       >
-        <Grid container item xs={12} md={8} direction="column">
-          <Stack direction="column" spacing={2}>
-            {postDetail.map(p => (
-              <Card variant="outlined" sx={{ borderRadius: "8px" }}>
-                <CardContent key={p.data.id}>
-                  <Grid
-                    container
-                    direction="row"
-                    gap={4}
-                    sx={{ padding: "12px", display: "inline-flex" }}
-                  >
-                    {leftColumn}
-                    <Grid
-                      container
-                      item
-                      direction="column"
-                      xs={6}
-                      justifyContent="center"
-                    >
-                      <Typography
-                        color="text.secondary"
-                        gutterBottom
-                        variant="h6"
-                      >
-                        {p.data.topic}
-                      </Typography>
-                      <Typography
-                        sx={{ fontSize: 14 }}
-                        color="text.secondary"
-                        gutterBottom
-                      >
-                        {p.data.description}
-                      </Typography>
-                      <Stack direction="row">
-                        <Typography className="item" sx={{ fontSize: 14 }}>
-                          <Link variant="inherit">{p.data.tag}</Link>
-                        </Typography>
-                      </Stack>
-                    </Grid>
-                    {rightColumn(p)}
-                  </Grid>
-                </CardContent>
-              </Card>
-            ))}
-            <Button
-              variant="text"
-              onClick={() => {
-                setShowWidget(true);
-              }}
-            >
-              Add a comment
-            </Button>
-            {showWidget && (
-              <Card>
-                <CardContent>
-                  <Stack direction="column" spacing={2}>
-                    <FormControl
-                      sx={{
-                        backgroundColor: "AppWorkspace",
-                        margin: "0 auto",
-                        width: "100%",
-                      }}
-                    >
-                      <Grid
-                        container
-                        direction="column"
-                        sx={{ margin: "0 auto" }}
-                        justifyContent="center"
-                        gap={2}
-                      >
-                        <TextareaAutosize
-                          aria-label="New Topic Form"
-                          minRows={3}
-                          value={comment}
-                          required
-                          style={{
-                            borderRadius: "8px",
-                            fontFamily: "Fira Sans",
-                            padding: "8px",
-                          }}
-                          onChange={e => {
-                            setComment(e.target.value);
-                          }}
-                        />
-                      </Grid>
-                    </FormControl>
-                  </Stack>
-                </CardContent>
+        <Stack direction="column" spacing={2} sx={{ width: "inherit" }}>
+          {postDetail.map(p => (
+            <Card variant="outlined" sx={{ borderRadius: "8px" }}>
+              <CardContent key={p.data.id}>
                 <Grid
                   container
-                  gap={2}
-                  justifyContent="flex-end"
-                  sx={{ marginBlockEnd: "12px", paddingRight: "12px" }}
+                  direction="row"
+                  xs={12}
+                  sx={{ padding: "12px", display: "flex" }}
+                  justifyContent="space-between"
                 >
-                  <Button
-                    onClick={() => {
-                      setShowWidget(false);
-                    }}
-                    variant="outlined"
-                    size="small"
-                    // disabled={submitDisabled}
+                  <Grid
+                    container
+                    item
+                    direction="column"
+                    xs={10}
+                    md={10}
+                    justifyContent="center"
+                    sx={{ overflow: "hidden" }}
                   >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleSubmit}
-                    variant="contained"
-                    size="small"
-                    disabled={comment.trim() === ""}
-                  >
-                    Submit
-                  </Button>
-                </Grid>
-              </Card>
-            )}
-            {userComments.map(c =>
-              c.map((p, i) => {
-                return (
-                  <Card key={i}>
-                    <CardContent>
-                      <Grid
-                        container
-                        direction="row"
-                        xs={12}
-                        sx={{ padding: "12px" }}
+                    <Typography
+                      color="text.secondary"
+                      gutterBottom
+                      variant="h6"
+                    >
+                      {p.data.title}
+                    </Typography>
+                    <Typography
+                      sx={{ fontSize: 14 }}
+                      color="text.secondary"
+                      gutterBottom
+                    >
+                      {p.data.description}
+                    </Typography>
+                    <Stack direction="row">
+                      <Typography
+                        className="item"
+                        sx={{
+                          fontSize: 14,
+                          color: "grey",
+                          paddingRight: "12px",
+                        }}
                       >
-                        <Grid item xs={1}>
-                          <Typography
-                            sx={{ fontSize: 14 }}
-                            color="text.secondary"
-                            gutterBottom
-                          >
-                            {p.createdByUser}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={8}>
-                          <Typography
-                            sx={{ fontSize: 14 }}
-                            color="text.secondary"
-                            gutterBottom
-                          >
-                            {p.comment}
-                          </Typography>
-                        </Grid>
-                        <Grid
-                          item
-                          xs={3}
-                          justifyContent="flex-end"
-                          sx={{ display: "flex" }}
+                        {p.data.tag}
+                      </Typography>
+                      <Typography
+                        className="item"
+                        color="text.secondary"
+                        sx={{ fontSize: 14 }}
+                      >
+                        {p.data.createdByUser} 2 hours ago
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                  {rightColumn(p)}
+                </Grid>
+              </CardContent>
+            </Card>
+          ))}
+          <Button
+            variant="text"
+            onClick={() => {
+              setShowWidget(true);
+            }}
+          >
+            Add a comment
+          </Button>
+          {showWidget && (
+            <Card>
+              <CardContent>
+                <Stack direction="column" spacing={2}>
+                  <FormControl
+                    sx={{
+                      backgroundColor: "AppWorkspace",
+                      margin: "0 auto",
+                      width: "100%",
+                    }}
+                  >
+                    <Grid
+                      container
+                      direction="column"
+                      sx={{ margin: "0 auto" }}
+                      justifyContent="center"
+                      gap={2}
+                    >
+                      <TextareaAutosize
+                        aria-label="New Topic Form"
+                        minRows={3}
+                        value={comment}
+                        required
+                        style={{
+                          borderRadius: "8px",
+                          fontFamily: "Fira Sans",
+                          padding: "8px",
+                        }}
+                        onChange={e => {
+                          setComment(e.target.value);
+                        }}
+                      />
+                    </Grid>
+                  </FormControl>
+                </Stack>
+              </CardContent>
+              <Grid
+                container
+                gap={2}
+                justifyContent="flex-end"
+                sx={{ marginBlockEnd: "12px", paddingRight: "12px" }}
+              >
+                <Button
+                  onClick={() => {
+                    setShowWidget(false);
+                  }}
+                  variant="outlined"
+                  size="small"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  variant="contained"
+                  size="small"
+                  disabled={comment.trim() === ""}
+                >
+                  Submit
+                </Button>
+              </Grid>
+            </Card>
+          )}
+          {userComments.map(c =>
+            c.map((p, i) => {
+              return (
+                <Card key={i}>
+                  <CardContent>
+                    <Grid
+                      container
+                      direction="row"
+                      xs={12}
+                      sx={{ padding: "12px" }}
+                    >
+                      <Grid item xs={1}>
+                        <Typography
+                          sx={{ fontSize: 14 }}
+                          color="text.secondary"
+                          gutterBottom
                         >
-                          <Button
-                            key={i}
-                            onClick={() => {
-                              if (postLike) {
-                                setPostLike(false);
-                              } else {
-                                setPostLike(true);
-                              }
-                            }}
-                          >
-                            {postLike ? <ThumbUp /> : <ThumbUpAltOutlined />}
-                          </Button>
-                        </Grid>
+                          {p.createdByUser}
+                        </Typography>
                       </Grid>
-                    </CardContent>
-                  </Card>
-                );
-              })
-            )}
-          </Stack>
-        </Grid>
+                      <Grid item xs={8}>
+                        <Typography
+                          sx={{ fontSize: 14 }}
+                          color="text.secondary"
+                          gutterBottom
+                        >
+                          {p.comment}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={3}
+                        justifyContent="flex-end"
+                        sx={{ display: "flex" }}
+                      >
+                        <Button
+                          key={i}
+                          onClick={() => {
+                            if (postLike) {
+                              setPostLike(false);
+                            } else {
+                              setPostLike(true);
+                            }
+                          }}
+                        >
+                          {postLike ? <ThumbUp /> : <ThumbUpAltOutlined />}
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+              );
+            })
+          )}
+        </Stack>
       </Grid>
     </React.Fragment>
   );
