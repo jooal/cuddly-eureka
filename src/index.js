@@ -10,7 +10,6 @@ import { Details } from "./pages/Details";
 import { AppProvider } from "./Components/AppContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-const threadId = 123;
 root.render(
   <AppProvider>
     <Router>

@@ -8,6 +8,7 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
+  Typography,
 } from "@mui/material";
 import { Header } from "../Components/Header";
 import { db } from "../../src/firebase/firebaseConfig";
@@ -15,6 +16,7 @@ import { collection, addDoc, Timestamp, documentId } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { AppProvider, useAppContext } from "../Components/AppContext";
 // import { randomUUID } from "crypto";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 
 const categories = [
   {
@@ -55,7 +57,7 @@ const categories = [
   },
   {
     id: 10,
-    name: "Marketing & Advertisement",
+    name: "Marketing & Advertising",
   },
 ];
 
@@ -66,8 +68,7 @@ export const NewTopic = () => {
   const [formError, setFormError] = React.useState("");
   const navigate = useNavigate();
 
-  const { userId } = useAppContext();
-  console.log(userId, "userid");
+  const { userId, displayName } = useAppContext();
 
   const submitDisabled = title === "" || description === "" || tag === "";
 
@@ -87,10 +88,12 @@ export const NewTopic = () => {
       await addDoc(collection(db, "posts"), {
         title: title,
         description: description,
-        createdBy: userId,
+        createdByUserId: userId,
+        createdByUser: displayName,
         createdAt: Timestamp.now(),
         tag: tag,
         commentCount: 0,
+        comments: [],
       }).then(() => {
         navigate("/");
       });
@@ -102,6 +105,7 @@ export const NewTopic = () => {
   return (
     <React.Fragment>
       <Header />
+
       <Grid
         container
         item
@@ -111,6 +115,19 @@ export const NewTopic = () => {
         justifyContent="center"
         sx={{ margin: "0 auto", marginBlockEnd: "36px" }}
       >
+        <Button
+          onClick={() => {
+            navigate("/");
+          }}
+          sx={{
+            justifyContent: "flex-start",
+            width: "150px",
+            marginBlockEnd: "24px",
+          }}
+        >
+          <KeyboardBackspaceIcon />
+          <Typography>Home</Typography>
+        </Button>
         <Stack direction="row" spacing={4}>
           <FormControl
             sx={{

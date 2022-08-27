@@ -1,15 +1,13 @@
 import * as React from "react";
-import { Grid, Stack, Pagination, Drawer, Button } from "@mui/material";
+import { Grid, Drawer, Button } from "@mui/material";
 import { Header } from "../Components/Header";
-import { Discussion } from "../Components/Discussion";
+import { Posts } from "../Components/Posts";
 import { SidePanel } from "../Components/SidePanel";
-import { useAppContext } from "../Components/AppContext";
-import { Cancel, CloseOutlined } from "@mui/icons-material";
+import { CloseOutlined } from "@mui/icons-material";
 
 export const Home = () => {
   const [filter, setFilter] = React.useState("");
   const [openDrawer, setOpenDrawer] = React.useState(false);
-  const { userId } = useAppContext();
 
   return (
     <React.Fragment>
@@ -55,7 +53,7 @@ export const Home = () => {
           )}
         </Grid>
         <Grid container item xs={10} md={8} direction="column">
-          <Discussion filter={filter} setFilter={setFilter} userId={userId} />
+          <Posts filter={filter} />
         </Grid>
       </Grid>
     </React.Fragment>

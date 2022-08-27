@@ -5,8 +5,8 @@ import App from "../App";
 type AppContextValue = {
   userIsLoggedIn: boolean;
   setUserIsLoggedIn: (userIsLoggedIn: boolean) => void;
-  userName: string;
-  setUserName: (userName: string) => void;
+  displayName: string;
+  setDisplayName: (displayName: string) => void;
   avatar: string;
   setAvatar: (avatar: string) => void;
   userEmail: string;
@@ -23,7 +23,8 @@ export const useAppContext = () => useContext(AppContext);
 
 export const AppProvider = props => {
   const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState(null);
+  const [displayName, setDisplayName] = useState(null);
+
   const [avatar, setAvatar] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
   const [userId, setUserId] = useState(null);
@@ -35,13 +36,14 @@ export const AppProvider = props => {
     () =>
       onAuthStateChanged(auth, user => {
         if (user) {
+          const userDisplayName = user.email.split("@")[0];
           // User is signed in, see docs for a list of available properties
           // https://firebase.google.com/docs/reference/js/firebase.User
           const uid = user.uid;
           setUserId(uid);
           setUserIsLoggedIn(true);
           setUserEmail(user.email);
-          setUserName(user.displayName);
+          setDisplayName(userDisplayName);
           setAvatar(user.photoURL);
 
           // ...
@@ -50,8 +52,8 @@ export const AppProvider = props => {
           // ...
           setUserIsLoggedIn(false);
           setUserId(undefined);
-          setUserEmail(undefined);
-          setUserName(undefined);
+          setDisplayName(undefined);
+          setDisplayName(undefined);
           setAvatar(undefined);
         }
       }),
@@ -62,8 +64,8 @@ export const AppProvider = props => {
     () => ({
       userIsLoggedIn,
       setUserIsLoggedIn,
-      userName,
-      setUserName,
+      displayName,
+      setDisplayName,
       userEmail,
       setUserEmail,
       avatar,
@@ -76,8 +78,8 @@ export const AppProvider = props => {
     [
       userIsLoggedIn,
       setUserIsLoggedIn,
-      userName,
-      setUserName,
+      displayName,
+      setDisplayName,
       userEmail,
       setUserEmail,
       avatar,

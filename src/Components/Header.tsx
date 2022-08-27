@@ -17,6 +17,7 @@ import { Login } from "../Components/Login";
 export const Header = () => {
   const navigate = useNavigate();
   const { userIsLoggedIn, setUserIsLoggedIn, avatar } = useAppContext();
+  console.log(avatar);
 
   return (
     <Box sx={{ flexGrow: 1, paddingBottom: "36px" }}>

@@ -4,11 +4,7 @@ import {
   Grid,
   Stack,
   Card,
-  Link,
-  Box,
-  Divider,
   Button,
-  Avatar,
   Typography,
   CardContent,
 } from "@mui/material";
@@ -21,83 +17,21 @@ import {
   onSnapshot,
   where,
 } from "firebase/firestore";
-import { db, signInWithGoogle } from "../firebase/firebaseConfig";
-import { useNavigate } from "react-router-dom";
+import { db } from "../firebase/firebaseConfig";
+import { PostCard } from "../Components/Card";
 
-const data = [
-  {
-    id: 123,
-    topic: "my discussion",
-    description: "my description",
-    tag: "Health Tech",
-    commentCount: 3,
-  },
-];
-
-const leftColumn = avatarSrc => (
-  <Grid
-    container
-    item
-    xs={2}
-    direction="column"
-    gap={2}
-    justifyContent="center"
-    alignItems="center"
-  >
-    <Avatar src={avatarSrc} />
-    <Divider />
-  </Grid>
-);
-
-const RightColumn = p => {
-  const { userIsLoggedIn } = useAppContext();
-  const detailId = p?.p.id;
-  const navigate = useNavigate();
-
-  return (
-    <Grid
-      container
-      item
-      direction="column"
-      gap={2}
-      xs={2}
-      justifyContent="center"
-    >
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ display: "flex" }}
-      >
-        {/* {p.data.createdAt} */}2 hours ago
-      </Typography>
-      <Divider />
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={() => {
-          if (userIsLoggedIn) {
-            navigate(`/${detailId}`);
-          } else {
-            signInWithGoogle();
-          }
-        }}
-      >
-        <Typography
-          sx={{ display: "flex" }}
-          variant="body2"
-          color="text.secondary"
-        >
-          {p.p.data.commentCount} comments
-        </Typography>
-      </Button>
-    </Grid>
-  );
-};
+// type Tabs = "mycomments" | "myposts";
+// interface ProfileProps {
+//  SelectedTab: Tabs;
+// }
 
 export const Profile = () => {
-  const { userEmail, setUserEmail, userName, avatar, userId } = useAppContext();
+  const { userEmail, setUserEmail, userId } = useAppContext();
   const [userPosts, setUserPosts] = useState([]);
+  const [userComments, setUserComments] = useState([]);
+
   const [tab, setTab] = useState("myposts");
+
   console.log(userPosts);
 
   React.useEffect(() => {
@@ -142,10 +76,11 @@ export const Profile = () => {
       <Grid
         container
         item
-        xs={10}
-        md={8}
-        direction="column"
+        xs={12}
+        md={12}
+        direction="row"
         justifyContent="center"
+        alignItems="center"
         sx={{ display: "flex" }}
       >
         <Button
@@ -160,9 +95,11 @@ export const Profile = () => {
         <Button
           variant="text"
           onClick={() => {
-            setTab("commments");
+            setTab("mycomments");
           }}
-          sx={{ textDecoration: tab === "comments" ? "underline" : "none" }}
+          sx={{
+            textDecoration: tab === "mycomments" ? "underline" : "none",
+          }}
         >
           Posts I've Commented On
         </Button>
@@ -174,66 +111,12 @@ export const Profile = () => {
         gap="24px"
       >
         <Grid container item xs={12} md={8} direction="column">
-          <Stack direction="column" spacing={2}>
-            {userPosts.map(p => (
-              <Card variant="outlined" sx={{ borderRadius: "8px" }}>
-                {data.length === 0 ? (
-                  <Box>
-                    <Typography sx={{ justifyContent: "center" }} variant="h4">
-                      No posts yet
-                    </Typography>
-                  </Box>
-                ) : (
-                  <CardContent key={p.data.id}>
-                    <Grid
-                      container
-                      direction="row"
-                      gap={4}
-                      sx={{ padding: "12px", display: "inline-flex" }}
-                    >
-                      {leftColumn(avatar)}
-                      <Grid
-                        container
-                        item
-                        direction="column"
-                        xs={6}
-                        justifyContent="center"
-                      >
-                        <Typography
-                          color="text.secondary"
-                          gutterBottom
-                          variant="h6"
-                        >
-                          {p.data.topic}
-                        </Typography>
-                        <Typography
-                          sx={{ fontSize: 14 }}
-                          color="text.secondary"
-                          gutterBottom
-                        >
-                          {p.data.description}
-                        </Typography>
-                        <Stack direction="row">
-                          <Typography className="item" sx={{ fontSize: 14 }}>
-                            <Link variant="inherit">{p.tag}</Link>
-                          </Typography>
-                        </Stack>
-                      </Grid>
-                      <RightColumn p={p} />
-                    </Grid>
-                  </CardContent>
-                )}
-              </Card>
-            ))}
-          </Stack>
+          <PostCard data={userPosts} />
         </Grid>
         <Grid container item xs={12} md={3} direction="column">
           <Stack direction="column">
             <Card variant="outlined" sx={{ borderRadius: "8px" }}>
               <CardContent>
-                <Typography color="text.secondary" gutterBottom variant="body2">
-                  {userName}
-                </Typography>
                 <Typography color="text.secondary" gutterBottom variant="body2">
                   {userEmail}
                 </Typography>
