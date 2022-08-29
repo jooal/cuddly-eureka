@@ -94,6 +94,7 @@ export const NewTopic = () => {
         tag: tag,
         commentCount: 0,
         comments: [],
+        upvotes: 0,
       }).then(() => {
         navigate("/");
       });

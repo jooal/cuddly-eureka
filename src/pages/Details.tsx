@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Grid,
   Stack,
@@ -20,6 +21,7 @@ import {
   query,
   doc,
   onSnapshot,
+  increment,
   documentId,
   updateDoc,
   Timestamp,
@@ -27,21 +29,22 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
-import { ThumbUp, ThumbUpAltOutlined } from "@mui/icons-material";
+import { ArrowCircleUp, ArrowCircleDown } from "@mui/icons-material";
 import { useAppContext } from "../Components/AppContext";
 import { useParams, useNavigate } from "react-router-dom";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 
 export const Details = () => {
-  const [postDetail, setPostDetail] = React.useState([]);
-  const [postLike, setPostLike] = React.useState(false);
-  const [showWidget, setShowWidget] = React.useState(false);
-  const [comment, setComment] = React.useState("");
+  const [postDetail, setPostDetail] = useState([]);
+  const [showWidget, setShowWidget] = useState(false);
+  const [comment, setComment] = useState("");
+  const [liked, setLiked] = useState(false);
   const { userId, displayName } = useAppContext();
   const { selectedPostId } = useParams();
   const navigate = useNavigate();
+  let btnRef = useRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const filterQuery = query(
       collection(db, "posts"),
       where(documentId(), "==", selectedPostId)
@@ -57,7 +60,7 @@ export const Details = () => {
     });
   }, [selectedPostId]);
 
-  const handleSubmit = async e => {
+  async function handleSubmit(e) {
     e.preventDefault();
     const docRef = doc(db, "posts", postDetail[0].id);
     try {
@@ -75,7 +78,31 @@ export const Details = () => {
       alert(err);
     }
     setComment("");
-  };
+  }
+
+  async function handleUpvote(e) {
+    e.preventDefault();
+    const docRef = doc(db, "posts", postDetail[0].id);
+    if (!liked) {
+      try {
+        await updateDoc(docRef, {
+          upvotes: increment(1),
+        });
+        setLiked(true);
+      } catch (err) {
+        alert(err);
+      }
+    } else {
+      try {
+        await updateDoc(docRef, {
+          upvotes: postDetail[0].upvotes <= 1 ? 0 : increment(-1),
+        });
+        setLiked(false);
+      } catch (err) {
+        alert(err);
+      }
+    }
+  }
 
   const userComments =
     postDetail.map(p =>
@@ -105,80 +132,82 @@ export const Details = () => {
             <KeyboardBackspaceIcon />
             <Typography>Home</Typography>
           </Button>
-          {postDetail.map(p => (
-            <Card variant="outlined" sx={{ borderRadius: "8px" }}>
-              <CardContent key={p.data.id}>
+          <Card variant="outlined" sx={{ borderRadius: "8px" }}>
+            <CardContent key={postDetail[0]?.data?.id}>
+              <Grid
+                container
+                direction="row"
+                xs={12}
+                sx={{ padding: "12px", display: "flex" }}
+                justifyContent="space-between"
+              >
                 <Grid
                   container
-                  direction="row"
-                  xs={12}
-                  sx={{ padding: "12px", display: "flex" }}
-                  justifyContent="space-between"
+                  item
+                  direction="column"
+                  xs={10}
+                  md={10}
+                  justifyContent="center"
+                  sx={{ overflow: "hidden" }}
                 >
-                  <Grid
-                    container
-                    item
-                    direction="column"
-                    xs={10}
-                    md={10}
-                    justifyContent="center"
-                    sx={{ overflow: "hidden" }}
+                  <Typography color="text.secondary" gutterBottom variant="h6">
+                    {postDetail[0]?.data?.title}
+                  </Typography>
+                  <Typography
+                    sx={{ fontSize: 14 }}
+                    color="text.secondary"
+                    gutterBottom
                   >
+                    {postDetail[0]?.data?.description}
+                  </Typography>
+                  <Stack direction="row">
                     <Typography
-                      color="text.secondary"
-                      gutterBottom
-                      variant="h6"
+                      className="item"
+                      sx={{
+                        fontSize: 14,
+                        color: "grey",
+                        paddingRight: "12px",
+                      }}
                     >
-                      {p.data.title}
+                      {postDetail[0]?.data?.tag}
                     </Typography>
                     <Typography
+                      className="item"
+                      color="text.secondary"
                       sx={{ fontSize: 14 }}
-                      color="text.secondary"
-                      gutterBottom
                     >
-                      {p.data.description}
+                      {postDetail[0]?.data?.createdByUser} 2 hours ago
                     </Typography>
-                    <Stack direction="row">
-                      <Typography
-                        className="item"
-                        sx={{
-                          fontSize: 14,
-                          color: "grey",
-                          paddingRight: "12px",
-                        }}
-                      >
-                        {p.data.tag}
-                      </Typography>
-                      <Typography
-                        className="item"
-                        color="text.secondary"
-                        sx={{ fontSize: 14 }}
-                      >
-                        {p.data.createdByUser} 2 hours ago
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                  <Grid
-                    container
-                    item
-                    direction="column"
-                    xs={12}
-                    md={2}
-                    justifyContent="center"
-                    sx={{ paddingTop: "12px" }}
-                  >
-                    <Typography
-                      sx={{ display: "flex" }}
-                      variant="body2"
-                      color="text.secondary"
-                    >
-                      {p.data.comments.length} comments
-                    </Typography>
-                  </Grid>
+                  </Stack>
                 </Grid>
-              </CardContent>
-            </Card>
-          ))}
+                <Grid
+                  container
+                  item
+                  direction="column"
+                  xs={12}
+                  md={2}
+                  justifyContent="center"
+                  sx={{ paddingTop: "12px" }}
+                >
+                  <Button
+                    ref={btnRef}
+                    data-test-id="upvote-btn"
+                    onClick={handleUpvote}
+                  >
+                    {postDetail[0]?.data?.upvotes}
+                    {liked ? <ArrowCircleDown /> : <ArrowCircleUp />}
+                  </Button>
+                  <Typography
+                    sx={{ display: "flex" }}
+                    variant="body2"
+                    color="text.secondary"
+                  >
+                    {postDetail[0]?.data?.comments.length} comments
+                  </Typography>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
           <Button
             variant="text"
             onClick={() => {
@@ -252,7 +281,6 @@ export const Details = () => {
           <>
             {userComments.map(c =>
               c.map((p, i) => {
-                console.log("c", c);
                 let currentView;
                 if (c.length === 0) {
                   currentView = null;
@@ -283,25 +311,6 @@ export const Details = () => {
                             >
                               {p.comment}
                             </Typography>
-                          </Grid>
-                          <Grid
-                            item
-                            xs={3}
-                            justifyContent="flex-end"
-                            sx={{ display: "flex" }}
-                          >
-                            <Button
-                              key={i}
-                              onClick={() => {
-                                if (postLike) {
-                                  setPostLike(false);
-                                } else {
-                                  setPostLike(true);
-                                }
-                              }}
-                            >
-                              {postLike ? <ThumbUp /> : <ThumbUpAltOutlined />}
-                            </Button>
                           </Grid>
                         </Grid>
                       </CardContent>

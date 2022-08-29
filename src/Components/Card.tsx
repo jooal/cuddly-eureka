@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useRef } from "react";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import SchoolIcon from "@mui/icons-material/School";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -21,6 +22,9 @@ import { useNavigate } from "react-router-dom";
 import { signInWithGoogle } from "../firebase/firebaseConfig";
 import { useAppContext } from "./AppContext";
 import { pluralize } from "../Components/utils";
+import { ArrowCircleUp, ArrowCircleDown } from "@mui/icons-material";
+import { doc, increment, updateDoc } from "firebase/firestore";
+import { db } from "../firebase/firebaseConfig";
 
 interface PostCardProps {
   data: any;
@@ -29,11 +33,39 @@ interface PostCardProps {
 export const PostCard = ({ data }: PostCardProps) => {
   const navigate = useNavigate();
   const { userIsLoggedIn } = useAppContext();
+  let btnRef = useRef();
+  const [liked, setLiked] = useState(false);
+
   return (
     <Stack direction="column" spacing={2} sx={{ width: "inherit" }}>
       {data.map(p => {
         const tag = p.data.tag;
         const detailId = p.id;
+        const dataUpvote = p.data.upvote;
+
+        async function handleUpvote(e) {
+          e.preventDefault();
+          const docRef = doc(db, "posts", detailId);
+          if (!liked) {
+            try {
+              await updateDoc(docRef, {
+                upvotes: increment(1),
+              });
+              setLiked(true);
+            } catch (err) {
+              alert(err);
+            }
+          } else {
+            try {
+              await updateDoc(docRef, {
+                upvotes: dataUpvote <= 1 ? 0 : increment(-1),
+              });
+              setLiked(false);
+            } catch (err) {
+              alert(err);
+            }
+          }
+        }
 
         let tagIcon;
         switch (tag) {
@@ -134,6 +166,14 @@ export const PostCard = ({ data }: PostCardProps) => {
                   justifyContent="center"
                   sx={{ paddingTop: "12px" }}
                 >
+                  <Button
+                    ref={btnRef}
+                    data-test-id="upvote-btn"
+                    onClick={handleUpvote}
+                  >
+                    {p?.data?.upvotes}
+                    {liked ? <ArrowCircleDown /> : <ArrowCircleUp />}
+                  </Button>
                   <Button
                     variant="outlined"
                     size="small"

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect } from "react";
 import { db } from "../firebase/firebaseConfig";
 import {
   collection,
@@ -19,7 +20,7 @@ interface DiscussionProps {
 export const Posts = ({ filter }: DiscussionProps) => {
   const [posts, setPosts] = React.useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
     const filterQuery = query(
       collection(db, "posts"),
