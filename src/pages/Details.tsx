@@ -65,6 +65,7 @@ export const Details = () => {
     const docRef = doc(db, "posts", postDetail[0].id);
     try {
       await updateDoc(docRef, {
+        commentedOnBy: arrayUnion(userId),
         comments: arrayUnion({
           comment: comment,
           createdAt: Timestamp.now(),

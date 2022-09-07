@@ -26,13 +26,11 @@ import { PostCard } from "../Components/Card";
 // }
 
 export const Profile = () => {
-  const { userEmail, setUserEmail, userId } = useAppContext();
+  const { userId } = useAppContext();
   const [userPosts, setUserPosts] = useState([]);
-  const [userComments, setUserComments] = useState([]);
+  console.log(userPosts);
 
   const [tab, setTab] = useState("myposts");
-
-  console.log(userPosts);
 
   React.useEffect(() => {
     const postQuery = query(
@@ -44,12 +42,11 @@ export const Profile = () => {
     const commentQuery = query(
       collection(db, "posts"),
       orderBy("createdAt", "desc"),
-      where("comments.createdByUserId", "array-contains", {
-        createdByUserId: userId,
-      })
+      where("commentedOnBy", "array-contains", userId)
     );
 
     if (tab === "myposts") {
+      console.log("posts");
       onSnapshot(postQuery, querySnapshot => {
         setUserPosts(
           querySnapshot.docs.map(doc => ({
@@ -59,6 +56,8 @@ export const Profile = () => {
         );
       });
     } else {
+      console.log("comments");
+
       onSnapshot(commentQuery, querySnapshot => {
         setUserPosts(
           querySnapshot.docs.map(doc => ({
@@ -68,20 +67,16 @@ export const Profile = () => {
         );
       });
     }
-  }, [setUserEmail, userId, tab]);
+  }, [userId, tab]);
 
   return (
     <React.Fragment>
       <Header />
       <Grid
         container
-        item
-        xs={12}
-        md={12}
         direction="row"
+        sx={{ display: "flex", paddingBottom: "36px" }}
         justifyContent="center"
-        alignItems="center"
-        sx={{ display: "flex" }}
       >
         <Button
           variant="text"
@@ -106,24 +101,15 @@ export const Profile = () => {
       </Grid>
       <Grid
         container
-        direction="row"
-        sx={{ paddingY: "36px", paddingX: "48px", display: "flex" }}
-        gap="24px"
+        item
+        xs={10}
+        md={8}
+        direction="column"
+        justifyContent="center"
+        alignContent="center"
+        sx={{ margin: "0 auto", marginBlockEnd: "48px" }}
       >
-        <Grid container item xs={12} md={8} direction="column">
-          <PostCard data={userPosts} />
-        </Grid>
-        <Grid container item xs={12} md={3} direction="column">
-          <Stack direction="column">
-            <Card variant="outlined" sx={{ borderRadius: "8px" }}>
-              <CardContent>
-                <Typography color="text.secondary" gutterBottom variant="body2">
-                  {userEmail}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Stack>
-        </Grid>
+        <PostCard data={userPosts} />
       </Grid>
     </React.Fragment>
   );
