@@ -23,8 +23,7 @@
   },
   "scripts": {
     "start": "NODE_PATH=./src react-scripts start",
-    "build": "PORT=80 NODE_ENV=dev react-scripts build",
-    "build-prod": "PORT=443 NODE_ENV=prod react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

@@ -1,7 +1,5 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import devConfigs from "./env/dev.json"
-import prodConfigs from "./env/prod.json"
 import {
   getAuth,
   signInWithRedirect,
@@ -13,10 +11,12 @@ import {
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  "prod": prodConfigs.firebase,
-  "dev": devConfigs.firebase
-}[process.env.NODE_ENV] || devConfigs.firebase
+const getFirebaseConfig = () => {
+  if (process.env.FIREBASE_CREDS)
+    return JSON.parse(process.env.FIREBASE_CREDS)
+  return require('./env/firebase.json')
+}
+const firebaseConfig = getFirebaseConfig()
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
