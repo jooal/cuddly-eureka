@@ -1,5 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import devConfigs from "env/dev.json"
+import prodConfigs from "env/prod.json"
 import {
   getAuth,
   signInWithRedirect,
@@ -12,14 +14,9 @@ import {
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBZyla4_LB-iXXOJhuZ7wnihi8job9yn_Q",
-  authDomain: "groundwork-b8326.firebaseapp.com",
-  projectId: "groundwork-b8326",
-  storageBucket: "groundwork-b8326.appspot.com",
-  messagingSenderId: "763747430748",
-  appId: "1:763747430748:web:cba40687e28cffeacbd199",
-  measurementId: "G-WTX4ZV6ZZJ",
-};
+  "prod": prodConfigs.firebase,
+  "dev": devConfigs.firebase
+}[process.env.NODE_ENV] || devConfigs.firebase
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
