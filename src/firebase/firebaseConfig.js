@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import devConfigs from "env/dev.json"
-import prodConfigs from "env/prod.json"
+import devConfigs from "./env/dev.json"
+import prodConfigs from "./env/prod.json"
 import {
   getAuth,
   signInWithRedirect,
