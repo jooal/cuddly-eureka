@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState, useRef } from "react";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import SchoolIcon from "@mui/icons-material/School";
@@ -23,7 +23,7 @@ import { signInWithGoogle } from "../firebase/firebaseConfig";
 import { useAppContext } from "./AppContext";
 import { pluralize } from "../Components/utils";
 import { ArrowCircleUp, ArrowCircleDown } from "@mui/icons-material";
-import { doc, increment, updateDoc } from "firebase/firestore";
+import { doc, increment, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 
 interface PostCardProps {
@@ -32,16 +32,16 @@ interface PostCardProps {
 
 export const PostCard = ({ data }: PostCardProps) => {
   const navigate = useNavigate();
-  const { userIsLoggedIn } = useAppContext();
+  const { userIsLoggedIn, userId } = useAppContext();
   let btnRef = useRef();
-  const [liked, setLiked] = useState(false);
 
   return (
     <Stack direction="column" spacing={2} sx={{ width: "inherit" }}>
-      {data.map(p => {
+      {data.map((p, i) => {
         const tag = p.data.tag;
         const detailId = p.id;
         const dataUpvote = p.data.upvote;
+        const liked = p.data.likedBy.filter(id => id === userId).length > 0;
 
         async function handleUpvote(e) {
           e.preventDefault();
@@ -50,8 +50,8 @@ export const PostCard = ({ data }: PostCardProps) => {
             try {
               await updateDoc(docRef, {
                 upvotes: increment(1),
+                likedBy: arrayUnion(userId),
               });
-              setLiked(true);
             } catch (err) {
               alert(err);
             }
@@ -59,8 +59,8 @@ export const PostCard = ({ data }: PostCardProps) => {
             try {
               await updateDoc(docRef, {
                 upvotes: dataUpvote <= 1 ? 0 : increment(-1),
+                likedBy: arrayRemove(userId),
               });
-              setLiked(false);
             } catch (err) {
               alert(err);
             }
@@ -101,7 +101,7 @@ export const PostCard = ({ data }: PostCardProps) => {
             break;
         }
         return (
-          <Card variant="outlined" sx={{ borderRadius: "8px" }}>
+          <Card key={i} variant="outlined" sx={{ borderRadius: "8px" }}>
             <CardContent id={p.id}>
               <Grid
                 container
